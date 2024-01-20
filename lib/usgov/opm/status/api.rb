@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "api/version"
-require_relative "api/error"
+require_relative "api/errors"
 
 module USGov
   module OPM
