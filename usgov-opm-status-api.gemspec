@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
 
   # Dependencies
   spec.add_dependency "http", "~> 5.1"
+  spec.add_dependency "oj", "~> 3.16"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
