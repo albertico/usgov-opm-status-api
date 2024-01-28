@@ -1,5 +1,6 @@
 AllCops:
   TargetRubyVersion: 3.3
+  NewCops: enable
 
 Style/StringLiterals:
   Enabled: true
@@ -9,5 +10,11 @@ Style/StringLiteralsInInterpolation:
   Enabled: true
   EnforcedStyle: double_quotes
 
+Style/ClassAndModuleChildren:
+  Enabled: false
+
 Layout/LineLength:
   Max: 120
+
+Lint/DuplicateBranch:
+  IgnoreLiteralBranches: true
