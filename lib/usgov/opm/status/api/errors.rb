@@ -52,12 +52,20 @@ module USGov
 
           protected
 
-          def raise_response_parsing_error(error_message)
-            raise(ResponseParsingError, "Error parsing HTTP response: #{error_message}")
-          end
-
           def raise_invalid_response_format_error(error_message)
             raise(InvalidResponseFormatError, "Invalid response format: #{error_message}")
+          end
+
+          def raise_invalid_status_type_format_error(error_message)
+            raise(InvalidStatusTypeFormatError, "Invalid status type format: #{error_message}")
+          end
+
+          def raise_invalid_status_type_error(error_message)
+            raise(InvalidStatusTypeError, "Invalid status type: #{error_message}")
+          end
+
+          def raise_response_parsing_error(error_message)
+            raise(ResponseParsingError, "Error parsing HTTP response: #{error_message}")
           end
 
           def raise_unexpected_http_error(error_message)
@@ -65,12 +73,26 @@ module USGov
           end
 
           def raise_client_error(error_message, error = ClientError)
-            error = ClientError unless error.ancestors.include?(ClientError)
+            # Set error to ClientError if error is nil or not a child of ClientError.
+            error =
+              if error.nil?
+                ClientError
+              else
+                error.ancestors.include?(ClientError) ? error : ClientError
+              end
+
             raise(error, "Client error: #{error_message}")
           end
 
           def raise_server_error(error_message, error = ServerError)
-            error = ServerError unless error.ancestors.include?(ServerError)
+            # Set error to ServerError if error is nil or not a child of ServerError.
+            error =
+              if error.nil?
+                ServerError
+              else
+                error.ancestors.include?(ServerError) ? error : ServerError
+              end
+
             raise(error, "Server error: #{error_message}")
           end
 
