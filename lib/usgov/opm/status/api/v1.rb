@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "errors"
+
 require "http"
 require "oj"
 
@@ -10,27 +12,51 @@ module USGov
         module V1
           BASE_URI = "https://www.opm.gov"
 
-          class CurrentStatus
-            API_ENDPOINT = "#{BASE_URI}/json/operatingstatus.json"
+          # USGov::OPM::Status::API::V1::CurrentStatusAPI
+          class CurrentStatusAPI
+            include Errable
 
-            def call(params={})
-              HTTP.get(API_ENDPOINT, params: params)
+            API_ENDPOINT = "#{BASE_URI}/json/operatingstatus.json".freeze
+
+            def call(params: {})
+              params ||= {}
+              raise_client_error("Parameters expected to be a Hash") unless params.is_a?(Hash)
+
+              HTTP.get(API_ENDPOINT, params:)
+            rescue HTTP::Error => e
+              raise_unexpected_http_error(e.message)
             end
           end
 
-          class StatusTypes
-            API_ENDPOINT = "#{BASE_URI}/json/statustypes.json"
+          # USGov::OPM::Status::API::V1::StatusTypesAPI
+          class StatusTypesAPI
+            include Errable
 
-            def call(params={})
-              HTTP.get(API_ENDPOINT, params: params)
+            API_ENDPOINT = "#{BASE_URI}/json/statustypes.json".freeze
+
+            def call(params: {})
+              params ||= {}
+              raise_client_error("Parameters expected to be a Hash") unless params.is_a?(Hash)
+
+              HTTP.get(API_ENDPOINT, params:)
+            rescue HTTP::Error => e
+              raise_unexpected_http_error(e.message)
             end
           end
 
-          class StatusHistory
-            API_ENDPOINT = "#{BASE_URI}/json/operatingstatushistory.json"
+          # USGov::OPM::Status::API::V1::StatusHistoryAPI
+          class StatusHistoryAPI
+            include Errable
 
-            def call(params={})
-              HTTP.get(API_ENDPOINT, params: params)
+            API_ENDPOINT = "#{BASE_URI}/json/operatingstatushistory.json".freeze
+
+            def call(params: {})
+              params ||= {}
+              raise_client_error("Parameters expected to be a Hash") unless params.is_a?(Hash)
+
+              HTTP.get(API_ENDPOINT, params:)
+            rescue HTTP::Error => e
+              raise_unexpected_http_error(e.message)
             end
           end
         end
