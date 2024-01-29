@@ -98,51 +98,145 @@ class USGov::OPM::Status::API::TestErrors < Minitest::Test # rubocop:disable Met
     assert_kind_of(USGov::OPM::Status::API::ServerError, @internal_server_error)
   end
 
+  def test_that_all_http_client_errors_are_a_client_error
+    USGov::OPM::Status::API::Errable::HTTP_CLIENT_ERRORS.each_value do |specific_client_error|
+      assert_includes(specific_client_error.ancestors, USGov::OPM::Status::API::ClientError)
+    end
+  end
+
+  def test_that_all_http_server_errors_are_a_server_error
+    USGov::OPM::Status::API::Errable::HTTP_SERVER_ERRORS.each_value do |specific_server_error|
+      assert_includes(specific_server_error.ancestors, USGov::OPM::Status::API::ServerError)
+    end
+  end
+
+  def test_that_errable_raises_invalid_response_format_error
+    assert_raises(USGov::OPM::Status::API::InvalidResponseFormatError) do
+      @errable_obj.send(:raise_invalid_response_format_error, "")
+    end
+  end
+
+  def test_that_errable_raises_invalid_status_type_format_error
+    assert_raises(USGov::OPM::Status::API::InvalidStatusTypeFormatError) do
+      @errable_obj.send(:raise_invalid_status_type_format_error, "")
+    end
+  end
+
+  def test_that_errable_raises_invalid_status_type_error
+    assert_raises(USGov::OPM::Status::API::InvalidStatusTypeError) do
+      @errable_obj.send(:raise_invalid_status_type_error, "")
+    end
+  end
+
+  def test_that_errable_raises_unexpected_http_error
+    assert_raises(USGov::OPM::Status::API::HTTPError) do
+      @errable_obj.send(:raise_unexpected_http_error, "")
+    end
+  end
+
+  def test_that_errable_raises_client_error
+    assert_raises(USGov::OPM::Status::API::ClientError) do
+      @errable_obj.send(:raise_client_error, "")
+    end
+  end
+
+  def test_that_errable_raises_client_error_when_error_is_nil
+    assert_raises(USGov::OPM::Status::API::ClientError) do
+      @errable_obj.send(:raise_client_error, "", nil)
+    end
+  end
+
+  def test_that_errable_raises_client_error_when_error_is_client_error
+    assert_raises(USGov::OPM::Status::API::ClientError) do
+      @errable_obj.send(:raise_client_error, "", USGov::OPM::Status::API::ClientError)
+    end
+  end
+
+  def test_that_errable_raises_specific_client_error_defined_in_http_client_errors
+    USGov::OPM::Status::API::Errable::HTTP_CLIENT_ERRORS.each_value do |specific_client_error|
+      assert_raises(specific_client_error) do
+        @errable_obj.send(:raise_client_error, "", specific_client_error)
+      end
+    end
+  end
+
+  def test_that_errable_raises_client_error_when_error_is_not_client_error
+    assert_raises(USGov::OPM::Status::API::ClientError) do
+      @errable_obj.send(:raise_client_error, "", USGov::OPM::Status::API::Error)
+    end
+
+    assert_raises(USGov::OPM::Status::API::ClientError) do
+      @errable_obj.send(:raise_client_error, "", StandardError)
+    end
+  end
+
+  def test_that_errable_raises_server_error
+    assert_raises(USGov::OPM::Status::API::ServerError) do
+      @errable_obj.send(:raise_server_error, "")
+    end
+  end
+
+  def test_that_errable_raises_server_error_when_error_is_nil
+    assert_raises(USGov::OPM::Status::API::ServerError) do
+      @errable_obj.send(:raise_server_error, "", nil)
+    end
+  end
+
+  def test_that_errable_raises_server_error_when_error_is_server_error
+    assert_raises(USGov::OPM::Status::API::ServerError) do
+      @errable_obj.send(:raise_server_error, "", USGov::OPM::Status::API::ServerError)
+    end
+  end
+
+  def test_that_errable_raises_specific_server_error_defined_in_http_server_errors
+    USGov::OPM::Status::API::Errable::HTTP_SERVER_ERRORS.each_value do |specific_server_error|
+      assert_raises(specific_server_error) do
+        @errable_obj.send(:raise_server_error, "", specific_server_error)
+      end
+    end
+  end
+
+  def test_that_errable_raises_server_error_when_error_is_not_server_error
+    assert_raises(USGov::OPM::Status::API::ServerError) do
+      @errable_obj.send(:raise_server_error, "", USGov::OPM::Status::API::Error)
+    end
+
+    assert_raises(USGov::OPM::Status::API::ServerError) do
+      @errable_obj.send(:raise_server_error, "", StandardError)
+    end
+  end
+
   def test_that_errable_raises_http_error_if_status_code_not_integer
     assert_raises(USGov::OPM::Status::API::HTTPError) do
       @errable_obj.send(:raise_http_error_based_on_response_status_code, nil)
     end
   end
 
-  def test_that_errable_raises_bad_request_error
-    assert_raises(USGov::OPM::Status::API::BadRequestError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 400)
+  def test_that_errable_raises_specific_client_error_based_on_status_code_defined_in_http_client_errors
+    USGov::OPM::Status::API::Errable::HTTP_CLIENT_ERRORS.each do |status_code, specific_client_error|
+      assert_raises(specific_client_error) do
+        @errable_obj.send(:raise_http_error_based_on_response_status_code, status_code)
+      end
     end
   end
 
-  def test_that_errable_raises_unauthorized_error
-    assert_raises(USGov::OPM::Status::API::UnauthorizedError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 401)
+  def test_that_errable_raises_specific_server_error_based_on_status_code_defined_in_http_server_errors
+    USGov::OPM::Status::API::Errable::HTTP_SERVER_ERRORS.each do |status_code, specific_server_error|
+      assert_raises(specific_server_error) do
+        @errable_obj.send(:raise_http_error_based_on_response_status_code, status_code)
+      end
     end
   end
 
-  def test_that_errable_raises_forbidden_error
-    assert_raises(USGov::OPM::Status::API::ForbiddenError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 403)
+  def test_that_errable_raises_http_error_if_status_code_not_supported
+    # Unsupported HTTP status code: 418 - I'm a Teapot
+    assert_raises(USGov::OPM::Status::API::HTTPError) do
+      @errable_obj.send(:raise_http_error_based_on_response_status_code, 418)
     end
-  end
 
-  def test_that_errable_raises_not_found_error
-    assert_raises(USGov::OPM::Status::API::NotFoundError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 404)
-    end
-  end
-
-  def test_that_errable_raises_unprocessable_entity_error
-    assert_raises(USGov::OPM::Status::API::UnprocessableEntityError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 422)
-    end
-  end
-
-  def test_that_errable_raises_too_many_requests_error
-    assert_raises(USGov::OPM::Status::API::TooManyRequestsError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 429)
-    end
-  end
-
-  def test_that_errable_raises_internal_server_error
-    assert_raises(USGov::OPM::Status::API::InternalServerError) do
-      @errable_obj.send(:raise_http_error_based_on_response_status_code, 500)
+    # Integer that's not a real HTTP status code.
+    assert_raises(USGov::OPM::Status::API::HTTPError) do
+      @errable_obj.send(:raise_http_error_based_on_response_status_code, 600)
     end
   end
 end
