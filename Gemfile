@@ -7,6 +7,7 @@ gemspec
 
 group :development, :test do
   gem "minitest", "~> 5.21"
+  gem "mocha", "~> 2.1"
   gem "rake", "~> 13.1"
   gem "rubocop", "~> 1.60"
   gem "webmock", "~> 3.19"
