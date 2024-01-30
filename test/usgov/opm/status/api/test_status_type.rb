@@ -52,16 +52,11 @@ class USGov::OPM::Status::API::TestStatusType < Minitest::Test
 
   def test_that_status_type_instantiation_raises_error_if_get_status_from_id_returns_nil
     # TODO: Stub StatusType.get_status_from_id to return nil
-    mock = Minitest::Mock.new
-    mock.expect(:call, nil, [@valid_status_type[:Id]])
+    USGov::OPM::Status::API::StatusType.stubs(:get_status_from_id).returns(nil)
 
-    USGov::OPM::Status::API::StatusType.stub(:get_status_from_id, mock) do
-      assert_raises(USGov::OPM::Status::API::InvalidStatusTypeError) do
-        USGov::OPM::Status::API::StatusType.new(@valid_status_type)
-      end
+    assert_raises(USGov::OPM::Status::API::InvalidStatusTypeError) do
+      USGov::OPM::Status::API::StatusType.new(@valid_status_type)
     end
-
-    assert_mock(mock)
   end
 
   def test_that_get_status_from_id_returns_all_known_statuses
