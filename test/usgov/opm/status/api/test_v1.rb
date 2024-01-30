@@ -26,7 +26,7 @@ class USGov::OPM::Status::API::TestV1 < Minitest::Test # rubocop:disable Metrics
 
   def test_that_current_status_api_call_raises_error_if_params_not_hash
     assert_raises(USGov::OPM::Status::API::ClientError) do
-      @current_status_api.call(params: "param1")
+      @current_status_api.call(params: "param_not_in_hash_but_string=1")
     end
   end
 
@@ -76,7 +76,7 @@ class USGov::OPM::Status::API::TestV1 < Minitest::Test # rubocop:disable Metrics
 
   def test_that_status_types_api_call_raises_error_if_params_not_hash
     assert_raises(USGov::OPM::Status::API::ClientError) do
-      @status_types_api.call(params: "param1")
+      @status_types_api.call(params: "param_not_in_hash_but_string=1")
     end
   end
 
